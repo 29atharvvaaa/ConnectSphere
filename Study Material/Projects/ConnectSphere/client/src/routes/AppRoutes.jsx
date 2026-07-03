@@ -7,6 +7,7 @@ import Dashboard from "../pages/Dashboard/Dashboard";
 import Profile from "../pages/Profile/Profile";
 import Projects from "../pages/Projects/Projects";
 import Jobs from "../pages/Jobs/Jobs";
+import EditProfile from "../pages/Profile/EditProfile";
 
 function AppRoutes() {
   return (
@@ -18,6 +19,7 @@ function AppRoutes() {
       <Route path="/profile" element={<Profile />} />
       <Route path="/projects" element={<Projects />} />
       <Route path="/jobs" element={<Jobs />} />
+      <Route path="/edit-profile" element={<EditProfile />} />
     </Routes>
   );
 }

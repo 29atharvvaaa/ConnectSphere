@@ -1,7 +1,37 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock } from "lucide-react";
-
+import { login } from "../../services/authService";
 function Login() {
+  const navigate = useNavigate();
+
+const [formData, setFormData] = useState({
+  email: "",
+  password: "",
+});
+const handleChange = (e) => {
+  setFormData({
+    ...formData,
+    [e.target.name]: e.target.value,
+  });
+};
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    const data = await login(formData);
+
+    localStorage.setItem("token", data.token);
+
+    alert("Login Successful!");
+
+    navigate("/dashboard");
+  } catch (error) {
+    alert(
+      error.response?.data?.message || "Login Failed"
+    );
+  }
+};
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center px-6 py-16">
 
@@ -22,8 +52,10 @@ function Login() {
 
         </div>
 
-        <form className="mt-10 space-y-6">
-
+<form
+  onSubmit={handleSubmit}
+  className="mt-10 space-y-6"
+>
           <div>
 
             <label className="mb-2 block text-sm text-slate-300">
@@ -35,10 +67,13 @@ function Login() {
               <Mail className="text-slate-400" size={18} />
 
               <input
-                type="email"
-                placeholder="you@example.com"
-                className="w-full bg-transparent px-3 py-4 text-white outline-none placeholder:text-slate-500"
-              />
+  type="email"
+  name="email"
+  value={formData.email}
+  onChange={handleChange}
+  placeholder="you@example.com"
+  className="w-full bg-transparent px-3 py-4 text-white outline-none placeholder:text-slate-500"
+/>
 
             </div>
 
@@ -55,10 +90,13 @@ function Login() {
               <Lock className="text-slate-400" size={18} />
 
               <input
-                type="password"
-                placeholder="••••••••"
-                className="w-full bg-transparent px-3 py-4 text-white outline-none placeholder:text-slate-500"
-              />
+  type="password"
+  name="password"
+  value={formData.password}
+  onChange={handleChange}
+  placeholder="••••••••"
+  className="w-full bg-transparent px-3 py-4 text-white outline-none placeholder:text-slate-500"
+/>
 
             </div>
 

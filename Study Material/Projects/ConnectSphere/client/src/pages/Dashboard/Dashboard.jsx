@@ -1,11 +1,35 @@
-import { users } from "../../data/users";
-import { projects } from "../../data/projects";
+import { useEffect, useState } from "react";
+import { getProfile } from "../../services/authService";
+
+import projects from "../../data/projects";
 import { internships } from "../../data/internships";
 import { notifications } from "../../data/notifications";
 
 function Dashboard() {
-  const user = users[0];
+const [user, setUser] = useState(null);
 
+useEffect(() => {
+  const fetchProfile = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const data = await getProfile(token);
+
+      setUser(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  fetchProfile();
+}, []);
+if (!user) {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white text-2xl">
+      Loading...
+    </div>
+  );
+}
   return (
     <div className="min-h-screen bg-slate-950 px-6 py-10 text-white">
 
