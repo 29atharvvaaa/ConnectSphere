@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import Landing from "../pages/Landing/Landing";
 import Login from "../pages/Auth/Login";
@@ -9,17 +9,34 @@ import Projects from "../pages/Projects/Projects";
 import Jobs from "../pages/Jobs/Jobs";
 import EditProfile from "../pages/Profile/EditProfile";
 
+import ProtectedRoute from "../components/ProtectedRoute";
+import MainLayout from "../layouts/MainLayout";
+
 function AppRoutes() {
   return (
     <Routes>
+      {/* Public Routes */}
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/projects" element={<Projects />} />
-      <Route path="/jobs" element={<Jobs />} />
-      <Route path="/edit-profile" element={<EditProfile />} />
+
+      {/* Protected Routes */}
+      <Route
+        element={
+          <ProtectedRoute>
+            <MainLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/projects" element={<Projects />} />
+        <Route path="/jobs" element={<Jobs />} />
+        <Route path="/edit-profile" element={<EditProfile />} />
+      </Route>
+
+      {/* 404 */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

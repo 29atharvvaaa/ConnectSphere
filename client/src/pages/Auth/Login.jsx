@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock } from "lucide-react";
-import { login } from "../../services/authService";
+import { loginUser } from "../../api/authService";
 function Login() {
   const navigate = useNavigate();
 
@@ -19,9 +19,10 @@ const handleSubmit = async (e) => {
   e.preventDefault();
 
   try {
-    const data = await login(formData);
+    const data = await loginUser(formData);
 
     localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
 
     alert("Login Successful!");
 
