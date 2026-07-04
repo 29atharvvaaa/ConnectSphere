@@ -9,7 +9,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use("/api/auth", authRoutes);
-console.log(process.env.JWT_SECRET);
 // MongoDB Connection
 mongoose
   .connect(process.env.MONGO_URI)

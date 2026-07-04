@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { User, Mail, Lock } from "lucide-react";
-import { register } from "../../services/authService";
+import { registerUser } from "../../api/authService";
 
 function Register() {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ function Register() {
     e.preventDefault();
 
     try {
-      const data = await register(formData);
+      const data = await registerUser(formData);
 
       alert(data.message);
 

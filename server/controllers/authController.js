@@ -169,10 +169,12 @@ const updateProfile = async (req, res) => {
 
     await user.save();
 
-    res.status(200).json({
-      message: "Profile Updated Successfully",
-      user,
-    });
+const updatedUser = await User.findById(req.user).select("-password");
+
+res.status(200).json({
+  message: "Profile Updated Successfully",
+  user: updatedUser,
+});
   } catch (error) {
     console.log(error);
 
