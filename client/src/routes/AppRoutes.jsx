@@ -6,6 +6,7 @@ import Register from "../pages/Auth/Register";
 import Dashboard from "../pages/Dashboard/Dashboard";
 import Profile from "../pages/Profile/Profile";
 import Projects from "../pages/Projects/Projects";
+import ProjectDetails from "../pages/Projects/ProjectDetails";  // <-- ADD THIS
 import Jobs from "../pages/Jobs/Jobs";
 import EditProfile from "../pages/Profile/EditProfile";
 
@@ -31,6 +32,10 @@ function AppRoutes() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/projects" element={<Projects />} />
+        <Route path="/projects/:id" element={<ProjectDetails />} />
+
+        {/* ADD THIS ROUTE */}
+
         <Route path="/jobs" element={<Jobs />} />
         <Route path="/edit-profile" element={<EditProfile />} />
       </Route>

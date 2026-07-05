@@ -2,6 +2,7 @@ import { ArrowRight, Users } from "lucide-react";
 import projects from "../../data/projects";
 
 function FeaturedProjects() {
+
   return (
     <section className="relative overflow-hidden bg-slate-950 px-6 py-24">
       {/* Background Glow */}
@@ -71,7 +72,10 @@ function FeaturedProjects() {
               <div className="mt-8 flex items-center justify-between border-t border-slate-800 pt-6">
                 <div className="flex items-center gap-2 text-slate-400">
                   <Users size={18} />
-                  <span>{project.members} Members</span>
+                  <span>
+  {project.members?.length || 0}{" "}
+  {project.members?.length === 1 ? "Member" : "Members"}
+</span>
                 </div>
 
                 <button className="flex items-center gap-2 font-medium text-blue-400 transition hover:gap-4">
