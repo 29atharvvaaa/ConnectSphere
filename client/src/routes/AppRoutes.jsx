@@ -6,7 +6,7 @@ import Register from "../pages/Auth/Register";
 import Dashboard from "../pages/Dashboard/Dashboard";
 import Profile from "../pages/Profile/Profile";
 import Projects from "../pages/Projects/Projects";
-import ProjectDetails from "../pages/Projects/ProjectDetails";  // <-- ADD THIS
+import ProjectDetails from "../pages/Projects/ProjectDetails";
 import Jobs from "../pages/Jobs/Jobs";
 import EditProfile from "../pages/Profile/EditProfile";
 
@@ -30,11 +30,15 @@ function AppRoutes() {
         }
       >
         <Route path="/dashboard" element={<Dashboard />} />
+
+        {/* My Profile */}
         <Route path="/profile" element={<Profile />} />
+
+        {/* Public User Profile */}
+        <Route path="/profile/:id" element={<Profile />} />
+
         <Route path="/projects" element={<Projects />} />
         <Route path="/projects/:id" element={<ProjectDetails />} />
-
-        {/* ADD THIS ROUTE */}
 
         <Route path="/jobs" element={<Jobs />} />
         <Route path="/edit-profile" element={<EditProfile />} />

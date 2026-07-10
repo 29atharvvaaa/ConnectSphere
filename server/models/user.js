@@ -53,6 +53,11 @@ const userSchema = new mongoose.Schema(
       default: "",
     },
 
+    location: {
+      type: String,
+      default: "",
+    },
+
     skills: {
       type: [String],
       default: [],

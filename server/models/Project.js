@@ -25,17 +25,45 @@ const projectSchema = new mongoose.Schema(
       default: "Open",
     },
 
-    members: [
-  {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-  },
-],
-
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+    },
+
+    members: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
+    maxMembers: {
+      type: Number,
+      default: 4,
+    },
+
+    requiredRoles: [
+      {
+        type: String,
+      },
+    ],
+
+    pendingRequests: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
+    github: {
+      type: String,
+      default: "",
+    },
+
+    demo: {
+      type: String,
+      default: "",
     },
   },
   {

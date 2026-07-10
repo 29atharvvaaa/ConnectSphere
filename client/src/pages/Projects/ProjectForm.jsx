@@ -5,6 +5,8 @@ function ProjectForm({ initialData = null, onSubmit, onCancel }) {
     title: "",
     description: "",
     tech: "",
+    requiredRoles: "",
+    maxMembers: 4,
     status: "Open",
   });
 
@@ -15,6 +17,10 @@ function ProjectForm({ initialData = null, onSubmit, onCancel }) {
       title: initialData.title || "",
       description: initialData.description || "",
       tech: initialData.tech ? initialData.tech.join(", ") : "",
+      requiredRoles: initialData.requiredRoles
+        ? initialData.requiredRoles.join(", ")
+        : "",
+      maxMembers: initialData.maxMembers || 4,
       status: initialData.status || "Open",
     });
   }, [initialData]);
@@ -22,7 +28,10 @@ function ProjectForm({ initialData = null, onSubmit, onCancel }) {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [e.target.name]:
+        e.target.name === "maxMembers"
+          ? Number(e.target.value)
+          : e.target.value,
     });
   };
 
@@ -33,13 +42,19 @@ function ProjectForm({ initialData = null, onSubmit, onCancel }) {
       title: formData.title,
       description: formData.description,
       status: formData.status,
+
       tech: formData.tech
         .split(",")
         .map((item) => item.trim())
         .filter(Boolean),
-    };
 
-    console.log("Submitting Project:", data);
+      requiredRoles: formData.requiredRoles
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean),
+
+      maxMembers: formData.maxMembers,
+    };
 
     onSubmit(data);
   };
@@ -95,6 +110,48 @@ function ProjectForm({ initialData = null, onSubmit, onCancel }) {
         <p className="mt-2 text-sm text-slate-400">
           Separate technologies with commas (e.g. React, Node.js, MongoDB)
         </p>
+      </div>
+
+      {/* Required Roles */}
+      <div>
+        <label className="mb-2 block text-sm text-slate-300">
+          Required Roles
+        </label>
+
+        <input
+          type="text"
+          name="requiredRoles"
+          value={formData.requiredRoles}
+          onChange={handleChange}
+          placeholder="Frontend, Backend, UI/UX"
+          className="w-full rounded-lg border border-slate-700 bg-slate-800 p-3 text-white outline-none focus:border-blue-500"
+        />
+
+        <p className="mt-2 text-sm text-slate-400">
+          Separate roles with commas.
+        </p>
+      </div>
+
+      {/* Maximum Members */}
+      <div>
+        <label className="mb-2 block text-sm text-slate-300">
+          Maximum Team Size
+        </label>
+
+        <select
+          name="maxMembers"
+          value={formData.maxMembers}
+          onChange={handleChange}
+          className="w-full rounded-lg border border-slate-700 bg-slate-800 p-3 text-white outline-none focus:border-blue-500"
+        >
+          <option value={2}>2 Members</option>
+          <option value={3}>3 Members</option>
+          <option value={4}>4 Members</option>
+          <option value={5}>5 Members</option>
+          <option value={6}>6 Members</option>
+          <option value={7}>7 Members</option>
+          <option value={8}>8 Members</option>
+        </select>
       </div>
 
       {/* Status */}

@@ -4,10 +4,9 @@ const API = axios.create({
   baseURL: "http://localhost:5001/api/projects",
 });
 
-// Get token from localStorage
 const getToken = () => localStorage.getItem("token");
 
-// Get all projects
+// ================= GET ALL PROJECTS =================
 export const getProjects = async () => {
   const response = await API.get("/", {
     headers: {
@@ -18,6 +17,7 @@ export const getProjects = async () => {
   return response.data;
 };
 
+// ================= GET SINGLE PROJECT =================
 export const getProjectById = async (id) => {
   const response = await API.get(`/${id}`, {
     headers: {
@@ -28,7 +28,7 @@ export const getProjectById = async (id) => {
   return response.data;
 };
 
-// Get logged-in user's projects
+// ================= MY PROJECTS =================
 export const getMyProjects = async () => {
   const response = await API.get("/my-projects", {
     headers: {
@@ -39,7 +39,7 @@ export const getMyProjects = async () => {
   return response.data;
 };
 
-// Create project
+// ================= CREATE PROJECT =================
 export const createProject = async (projectData) => {
   const response = await API.post("/", projectData, {
     headers: {
@@ -50,7 +50,7 @@ export const createProject = async (projectData) => {
   return response.data;
 };
 
-// Update project
+// ================= UPDATE PROJECT =================
 export const updateProject = async (id, projectData) => {
   const response = await API.put(`/${id}`, projectData, {
     headers: {
@@ -61,7 +61,7 @@ export const updateProject = async (id, projectData) => {
   return response.data;
 };
 
-// Delete project
+// ================= DELETE PROJECT =================
 export const deleteProject = async (id) => {
   const response = await API.delete(`/${id}`, {
     headers: {
@@ -72,10 +72,40 @@ export const deleteProject = async (id) => {
   return response.data;
 };
 
-// Join Project
+// ================= SEND JOIN REQUEST =================
 export const joinProject = async (id) => {
   const response = await API.post(
     `/${id}/join`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+      },
+    }
+  );
+
+  return response.data;
+};
+
+// ================= ACCEPT REQUEST =================
+export const acceptRequest = async (projectId, userId) => {
+  const response = await API.put(
+    `/${projectId}/accept/${userId}`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+      },
+    }
+  );
+
+  return response.data;
+};
+
+// ================= REJECT REQUEST =================
+export const rejectRequest = async (projectId, userId) => {
+  const response = await API.put(
+    `/${projectId}/reject/${userId}`,
     {},
     {
       headers: {

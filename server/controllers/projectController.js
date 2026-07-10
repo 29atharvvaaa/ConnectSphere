@@ -3,19 +3,28 @@ const Project = require("../models/Project");
 // ================= CREATE PROJECT =================
 const createProject = async (req, res) => {
   try {
-    console.log("req.user =", req.user);
-    console.log("typeof req.user =", typeof req.user);
+    // console.log("req.user =", req.user);
+    // console.log("typeof req.user =", typeof req.user);
 
-    const { title, description, tech, status } = req.body;
+    const {
+  title,
+  description,
+  tech,
+  status,
+  maxMembers,
+  requiredRoles,
+} = req.body;
 
     const project = await Project.create({
-      title,
-      description,
-      tech,
-      status,
-      owner: req.user,
-      members: [req.user],
-    });
+  title,
+  description,
+  tech,
+  status,
+  maxMembers,
+  requiredRoles,
+  owner: req.user,
+  members: [req.user],
+});
 
     console.log("Saved project:", project);
 
@@ -32,10 +41,9 @@ const createProject = async (req, res) => {
 // ================= GET ALL PROJECTS =================
 const getProjects = async (req, res) => {
   try {
-    const projects = await Project.find().populate(
-      "owner",
-      "name email"
-    );
+    const projects = await Project.find()
+  .populate("owner", "name email")
+  .populate("members", "name email");
 
     res.json(projects);
   } catch (error) {
@@ -49,8 +57,10 @@ const getProjects = async (req, res) => {
 const getMyProjects = async (req, res) => {
   try {
     const projects = await Project.find({
-      owner: req.user,
-    });
+  owner: req.user,
+})
+.populate("owner", "name email")
+.populate("members", "name email");
 
     res.json(projects);
   } catch (error) {
@@ -63,10 +73,10 @@ const getMyProjects = async (req, res) => {
 // ================= GET SINGLE PROJECT =================
 const getProjectById = async (req, res) => {
   try {
-    const project = await Project.findById(req.params.id).populate(
-      "owner",
-      "name email"
-    );
+    const project = await Project.findById(req.params.id)
+      .populate("owner", "name email")
+      .populate("members", "name email")
+      .populate("pendingRequests", "name email");
 
     if (!project) {
       return res.status(404).json({
@@ -104,6 +114,8 @@ const updateProject = async (req, res) => {
     project.description = req.body.description;
     project.tech = req.body.tech;
     project.status = req.body.status;
+    project.maxMembers = req.body.maxMembers;
+    project.requiredRoles = req.body.requiredRoles;
 
     await project.save();
 
@@ -149,6 +161,7 @@ const deleteProject = async (req, res) => {
 };
 
 // ================= JOIN PROJECT =================
+// ================= JOIN PROJECT =================
 const joinProject = async (req, res) => {
   try {
     const project = await Project.findById(req.params.id);
@@ -159,19 +172,151 @@ const joinProject = async (req, res) => {
       });
     }
 
-    if (project.members.includes(req.user)) {
+    // Owner cannot join their own project
+    if (project.owner.toString() === req.user) {
       return res.status(400).json({
-        message: "Already joined",
+        message: "You already own this project",
       });
     }
 
-    project.members.push(req.user);
+    // Already a member
+    if (
+      project.members.some(
+        (member) => member.toString() === req.user
+      )
+    ) {
+      return res.status(400).json({
+        message: "You are already a team member",
+      });
+    }
+
+    // Already requested
+    if (
+      project.pendingRequests.some(
+        (user) => user.toString() === req.user
+      )
+    ) {
+      return res.status(400).json({
+        message: "Request already sent",
+      });
+    }
+
+    // Team full
+    if (project.members.length >= project.maxMembers) {
+      return res.status(400).json({
+        message: "Project team is full",
+      });
+    }
+
+    // Add request
+    project.pendingRequests.push(req.user);
+
+await project.save();
+
+await project.populate("owner", "name email");
+await project.populate("members", "name email");
+await project.populate("pendingRequests", "name email");
+
+res.json(project);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+// ================= ACCEPT REQUEST =================
+const acceptRequest = async (req, res) => {
+  try {
+    const { id, userId } = req.params;
+
+    const project = await Project.findById(id);
+
+    if (!project) {
+      return res.status(404).json({
+        message: "Project not found",
+      });
+    }
+
+    // Only owner can accept
+    if (project.owner.toString() !== req.user) {
+      return res.status(403).json({
+        message: "Unauthorized",
+      });
+    }
+
+    // Request exists?
+    if (
+      !project.pendingRequests.some(
+        (u) => u.toString() === userId
+      )
+    ) {
+      return res.status(400).json({
+        message: "Request not found",
+      });
+    }
+
+    // Team full?
+    if (project.members.length >= project.maxMembers) {
+      return res.status(400).json({
+        message: "Project team is full",
+      });
+    }
+
+    // Remove request
+    project.pendingRequests = project.pendingRequests.filter(
+      (u) => u.toString() !== userId
+    );
+
+    // Add member
+    project.members.push(userId);
 
     await project.save();
-
     await project.populate("owner", "name email");
+await project.populate("members", "name email");
+await project.populate("pendingRequests", "name email");
+    res.json({
+      message: "Request accepted successfully",
+      project,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 
-    res.json(project);
+// ================= REJECT REQUEST =================
+const rejectRequest = async (req, res) => {
+  try {
+    const { id, userId } = req.params;
+
+    const project = await Project.findById(id);
+
+    if (!project) {
+      return res.status(404).json({
+        message: "Project not found",
+      });
+    }
+
+    if (project.owner.toString() !== req.user) {
+      return res.status(403).json({
+        message: "Unauthorized",
+      });
+    }
+
+    project.pendingRequests = project.pendingRequests.filter(
+      (u) => u.toString() !== userId
+    );
+
+    await project.save();
+    await project.populate("owner", "name email");
+await project.populate("members", "name email");
+await project.populate("pendingRequests", "name email");
+    res.json({
+      message: "Request rejected successfully",
+      project,
+    });
   } catch (error) {
     res.status(500).json({
       message: error.message,
@@ -187,4 +332,6 @@ module.exports = {
   updateProject,
   deleteProject,
   joinProject,
+  acceptRequest,
+  rejectRequest,
 };

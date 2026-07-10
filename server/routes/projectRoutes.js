@@ -9,6 +9,8 @@ const {
   updateProject,
   deleteProject,
   joinProject,
+  acceptRequest,
+  rejectRequest,
 } = require("../controllers/projectController");
 
 const protect = require("../middleware/authMiddleware");
@@ -19,19 +21,25 @@ router.post("/", protect, createProject);
 // Get All Projects
 router.get("/", protect, getProjects);
 
-// Get Logged-in User's Projects
+// My Projects
 router.get("/my-projects", protect, getMyProjects);
 
-// Get Single Project
+// Single Project
 router.get("/:id", protect, getProjectById);
 
-// Update Project
+// Update
 router.put("/:id", protect, updateProject);
 
-// Delete Project
+// Delete
 router.delete("/:id", protect, deleteProject);
 
-//Join Project
+// Join Request
 router.post("/:id/join", protect, joinProject);
+
+// Accept Request
+router.put("/:id/accept/:userId", protect, acceptRequest);
+
+// Reject Request
+router.put("/:id/reject/:userId", protect, rejectRequest);
 
 module.exports = router;

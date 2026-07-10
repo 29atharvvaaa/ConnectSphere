@@ -54,14 +54,6 @@ function Navbar() {
         {/* Right Side */}
         <div className="flex items-center gap-4">
 
-          {/* Post Internship Button */}
-          <button
-            className="hidden items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white transition hover:bg-blue-500 md:flex"
-          >
-            <Plus size={18} />
-            Post Internship
-          </button>
-
           {/* User */}
           <Link
             to="/profile"

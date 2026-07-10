@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { getJobs, applyJob } from "../../api/jobService";
 import { MapPin, Briefcase, ArrowRight } from "lucide-react";
+import PostJobModal from "../../components/jobs/PostJobModal";
 
 function Jobs() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     fetchJobs();
@@ -54,6 +56,21 @@ function Jobs() {
             for talented student developers. Build experience before
             graduation.
           </p>
+
+          <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <button
+              onClick={() => setShowModal(true)}
+              className="rounded-xl bg-blue-600 px-8 py-4 text-lg font-semibold transition-all duration-300 hover:scale-105 hover:bg-blue-500 hover:shadow-[0_0_30px_rgba(59,130,246,0.45)]"
+            >
+              + Post Opportunity
+            </button>
+
+            <button
+              className="rounded-xl border border-slate-700 bg-slate-900 px-8 py-4 text-lg font-semibold text-slate-300 transition-all duration-300 hover:border-blue-500 hover:text-white"
+            >
+              View all Jobs
+            </button>
+          </div>
         </div>
       </section>
 
@@ -80,9 +97,7 @@ function Jobs() {
                       {job.type}
                     </div>
 
-                    <h2 className="text-3xl font-bold">
-                      {job.title}
-                    </h2>
+                    <h2 className="text-3xl font-bold">{job.title}</h2>
 
                     <p className="mt-3 text-lg text-slate-400">
                       {job.company}
@@ -148,6 +163,12 @@ function Jobs() {
           </button>
         </div>
       </section>
+
+      <PostJobModal
+  isOpen={showModal}
+  onClose={() => setShowModal(false)}
+  onSuccess={fetchJobs}
+/>
     </div>
   );
 }
