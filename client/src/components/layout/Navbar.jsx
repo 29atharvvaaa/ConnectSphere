@@ -1,5 +1,5 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { LogOut } from "lucide-react";
+import { LogOut, Plus } from "lucide-react";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -13,7 +13,6 @@ function Navbar() {
   };
 
   const active = "text-blue-400 font-semibold";
-
   const normal = "text-slate-300 hover:text-blue-400 transition";
 
   return (
@@ -30,39 +29,40 @@ function Navbar() {
 
         {/* Navigation */}
         <div className="hidden gap-8 md:flex">
-
           <NavLink
             to="/dashboard"
-            className={({ isActive }) =>
-              isActive ? active : normal
-            }
+            className={({ isActive }) => (isActive ? active : normal)}
           >
             Dashboard
           </NavLink>
 
           <NavLink
             to="/projects"
-            className={({ isActive }) =>
-              isActive ? active : normal
-            }
+            className={({ isActive }) => (isActive ? active : normal)}
           >
             Projects
           </NavLink>
 
           <NavLink
             to="/jobs"
-            className={({ isActive }) =>
-              isActive ? active : normal
-            }
+            className={({ isActive }) => (isActive ? active : normal)}
           >
             Jobs
           </NavLink>
-
         </div>
 
-        {/* User Section */}
+        {/* Right Side */}
         <div className="flex items-center gap-4">
 
+          {/* Post Internship Button */}
+          <button
+            className="hidden items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white transition hover:bg-blue-500 md:flex"
+          >
+            <Plus size={18} />
+            Post Internship
+          </button>
+
+          {/* User */}
           <Link
             to="/profile"
             className="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-800"
@@ -90,7 +90,6 @@ function Navbar() {
           </button>
 
         </div>
-
       </div>
     </nav>
   );
