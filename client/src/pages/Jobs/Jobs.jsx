@@ -1,12 +1,35 @@
-import { useEffect, useState } from "react";
-import { getJobs, applyJob } from "../../api/jobService";
-import { MapPin, Briefcase, ArrowRight } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  getJobs,
+  applyJob,
+  deleteJob,
+} from "../../api/jobService";
+
+import {
+  MapPin,
+  Briefcase,
+  ArrowRight,
+  Pencil,
+  Trash2,
+  Users,
+} from "lucide-react";
+
 import PostJobModal from "../../components/jobs/PostJobModal";
+import EditJobModal from "../../components/jobs/EditJobModal";
 
 function Jobs() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
+
   const [showModal, setShowModal] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
+
+  const [selectedJob, setSelectedJob] = useState(null);
+
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("All");
+
+  const user = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
     fetchJobs();
@@ -33,142 +56,282 @@ function Jobs() {
     }
   };
 
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(
+      "Delete this opportunity?"
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      await deleteJob(id);
+      fetchJobs();
+    } catch (error) {
+      alert(error.response?.data?.message || "Delete Failed");
+    }
+  };
+
+  const handleEdit = (job) => {
+    setSelectedJob(job);
+    setShowEdit(true);
+  };
+
+  const handleUpdate = () => {
+    setShowEdit(false);
+    setSelectedJob(null);
+    fetchJobs();
+  };
+
+  const filteredJobs = useMemo(() => {
+    return jobs.filter((job) => {
+      const keyword = search.toLowerCase();
+
+      const matchesSearch =
+        job.title.toLowerCase().includes(keyword) ||
+        job.company.toLowerCase().includes(keyword) ||
+        job.location.toLowerCase().includes(keyword) ||
+        job.description.toLowerCase().includes(keyword) ||
+        job.skills.some((skill) =>
+          skill.toLowerCase().includes(keyword)
+        );
+
+      const matchesFilter =
+        filter === "All" || job.type === filter;
+
+      return matchesSearch && matchesFilter;
+    });
+  }, [jobs, search, filter]);
   return (
     <div className="min-h-screen bg-slate-950 text-white">
+
       {/* Hero */}
-      <section className="relative overflow-hidden border-b border-slate-800 py-24">
-        <div className="absolute left-1/2 top-0 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-blue-500/20 blur-[160px]" />
+      <section className="relative overflow-hidden border-b border-slate-800 py-20">
 
-        <div className="relative mx-auto max-w-7xl px-6 text-center">
-          <span className="rounded-full border border-blue-500/30 bg-blue-500/10 px-5 py-2 text-sm font-medium text-blue-400">
-            INTERNSHIP OPPORTUNITIES
-          </span>
+        <div className="absolute left-1/2 top-0 h-[450px] w-[450px] -translate-x-1/2 rounded-full bg-blue-500/20 blur-[150px]" />
 
-          <h1 className="mt-8 text-6xl font-bold">
-            Find Your Next
-            <span className="block bg-gradient-to-r from-blue-400 via-blue-500 to-cyan-400 bg-clip-text text-transparent">
-              Dream Internship
-            </span>
-          </h1>
+        <div className="relative mx-auto max-w-7xl px-6">
 
-          <p className="mx-auto mt-8 max-w-3xl text-lg leading-8 text-slate-400">
-            Explore internships from startups and companies looking
-            for talented student developers. Build experience before
-            graduation.
-          </p>
+          <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
 
-          <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <div>
+
+              <span className="rounded-full border border-blue-500/30 bg-blue-500/10 px-5 py-2 text-sm font-medium text-blue-400">
+                INTERNSHIP OPPORTUNITIES
+              </span>
+
+              <h1 className="mt-6 text-5xl font-bold">
+                Find Your Next
+                <span className="block bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+                  Dream Internship
+                </span>
+              </h1>
+
+              <p className="mt-6 max-w-2xl text-lg text-slate-400">
+                Explore internships and jobs posted by students and companies.
+                Apply instantly or publish your own opportunity.
+              </p>
+
+            </div>
+
             <button
               onClick={() => setShowModal(true)}
-              className="rounded-xl bg-blue-600 px-8 py-4 text-lg font-semibold transition-all duration-300 hover:scale-105 hover:bg-blue-500 hover:shadow-[0_0_30px_rgba(59,130,246,0.45)]"
+              className="rounded-xl bg-blue-600 px-8 py-4 font-semibold transition hover:bg-blue-500"
             >
               + Post Opportunity
             </button>
 
-            <button
-              className="rounded-xl border border-slate-700 bg-slate-900 px-8 py-4 text-lg font-semibold text-slate-300 transition-all duration-300 hover:border-blue-500 hover:text-white"
-            >
-              View all Jobs
-            </button>
           </div>
+
+          {/* Search + Filter */}
+
+          <div className="mt-10 flex flex-col gap-4 md:flex-row">
+
+            <input
+              type="text"
+              placeholder="Search jobs..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="flex-1 rounded-xl border border-slate-700 bg-slate-900 px-5 py-3 outline-none focus:border-blue-500"
+            />
+
+            <select
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              className="rounded-xl border border-slate-700 bg-slate-900 px-5 py-3 outline-none"
+            >
+              <option>All</option>
+              <option>Internship</option>
+              <option>Full Time</option>
+              <option>Part Time</option>
+              <option>Remote</option>
+            </select>
+
+          </div>
+
         </div>
+
       </section>
 
       {/* Jobs */}
-      <section className="mx-auto max-w-7xl px-6 py-20">
+
+      <section className="mx-auto max-w-7xl px-6 py-16">
+
         {loading ? (
+
           <h2 className="text-center text-xl text-slate-400">
             Loading Jobs...
           </h2>
-        ) : jobs.length === 0 ? (
-          <h2 className="text-center text-xl text-slate-400">
-            No Jobs Available
-          </h2>
+
+        ) : filteredJobs.length === 0 ? (
+
+          <div className="rounded-3xl border border-dashed border-slate-700 py-24 text-center">
+
+            <div className="text-6xl">💼</div>
+
+            <h2 className="mt-5 text-3xl font-bold">
+              No Jobs Found
+            </h2>
+
+            <p className="mt-3 text-slate-400">
+              Try another search or post a new opportunity.
+            </p>
+
+          </div>
+
         ) : (
+
           <div className="grid gap-8">
-            {jobs.map((job) => (
-              <div
-                key={job._id}
-                className="group rounded-3xl border border-slate-800 bg-slate-900 p-8 transition-all duration-300 hover:-translate-y-2 hover:border-blue-500 hover:shadow-[0_20px_60px_rgba(59,130,246,0.18)]"
-              >
-                <div className="flex flex-col justify-between gap-8 lg:flex-row lg:items-center">
-                  <div>
-                    <div className="mb-4 inline-flex rounded-full bg-blue-600/20 px-4 py-2 text-sm font-medium text-blue-400">
-                      {job.type}
-                    </div>
 
-                    <h2 className="text-3xl font-bold">{job.title}</h2>
+            {filteredJobs.map((job) => {
 
-                    <p className="mt-3 text-lg text-slate-400">
-                      {job.company}
-                    </p>
+              const isOwner =
+                job.postedBy?._id === user?._id;
 
-                    <div className="mt-5 flex flex-wrap items-center gap-6 text-slate-400">
-                      <div className="flex items-center gap-2">
-                        <MapPin size={18} />
-                        {job.location}
+              return (
+
+                <div
+                  key={job._id}
+                  className="rounded-3xl border border-slate-800 bg-slate-900 p-8 transition hover:border-blue-500 hover:shadow-xl"
+                >
+
+                  <div className="flex flex-col gap-8 lg:flex-row lg:justify-between">
+
+                    <div className="flex-1">
+
+                      <span className="rounded-full bg-blue-600/20 px-4 py-2 text-sm text-blue-400">
+                        {job.type}
+                      </span>
+
+                      <h2 className="mt-5 text-3xl font-bold">
+                        {job.title}
+                      </h2>
+
+                      <p className="mt-2 text-lg text-slate-400">
+                        {job.company}
+                      </p>
+
+                      <div className="mt-5 flex flex-wrap gap-6 text-slate-400">
+
+                        <div className="flex items-center gap-2">
+                          <MapPin size={18} />
+                          {job.location}
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <Briefcase size={18} />
+                          {job.salary}
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <Users size={18} />
+                          {job.applicants.length} Applicants
+                        </div>
+
                       </div>
 
-                      <div className="flex items-center gap-2">
-                        <Briefcase size={18} />
-                        {job.salary}
+                      <p className="mt-6 text-slate-300">
+                        {job.description}
+                      </p>
+
+                      <div className="mt-6 flex flex-wrap gap-2">
+
+                        {job.skills.map((skill, index) => (
+
+                          <span
+                            key={index}
+                            className="rounded-full bg-slate-800 px-3 py-1 text-sm text-blue-300"
+                          >
+                            {skill}
+                          </span>
+
+                        ))}
+
                       </div>
+
                     </div>
 
-                    <p className="mt-5 text-slate-300">
-                      {job.description}
-                    </p>
+                    <div className="flex flex-col gap-3">
 
-                    <div className="mt-5 flex flex-wrap gap-2">
-                      {job.skills.map((skill, index) => (
-                        <span
-                          key={index}
-                          className="rounded-full bg-slate-800 px-3 py-1 text-sm text-blue-300"
+                      {isOwner ? (
+                        <>
+                          <button
+                            onClick={() => handleEdit(job)}
+                            className="flex items-center gap-2 rounded-xl bg-amber-500 px-6 py-3 font-semibold text-black hover:bg-amber-400"
+                          >
+                            <Pencil size={18} />
+                            Edit
+                          </button>
+
+                          <button
+                            onClick={() => handleDelete(job._id)}
+                            className="flex items-center gap-2 rounded-xl bg-red-600 px-6 py-3 font-semibold hover:bg-red-500"
+                          >
+                            <Trash2 size={18} />
+                            Delete
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          onClick={() => handleApply(job._id)}
+                          className="flex items-center gap-2 rounded-xl bg-blue-600 px-8 py-4 font-semibold hover:bg-blue-500"
                         >
-                          {skill}
-                        </span>
-                      ))}
+                          Apply Now
+                          <ArrowRight size={18} />
+                        </button>
+                      )}
+
                     </div>
+
                   </div>
 
-                  <button
-                    onClick={() => handleApply(job._id)}
-                    className="flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-8 py-4 font-semibold transition-all duration-300 hover:scale-105 hover:bg-blue-500 hover:shadow-[0_0_30px_rgba(59,130,246,0.5)]"
-                  >
-                    Apply Now
-                    <ArrowRight size={18} />
-                  </button>
                 </div>
-              </div>
-            ))}
+
+              );
+
+            })}
+
           </div>
+
         )}
-      </section>
 
-      {/* CTA */}
-      <section className="border-t border-slate-800 bg-slate-900 py-20">
-        <div className="mx-auto max-w-4xl px-6 text-center">
-          <h2 className="text-5xl font-bold">
-            Don't See Your Dream Internship?
-          </h2>
-
-          <p className="mt-6 text-lg leading-8 text-slate-400">
-            New internship opportunities are posted every week.
-            Build projects, grow your profile, and recruiters
-            will discover you.
-          </p>
-
-          <button className="mt-10 rounded-2xl bg-blue-600 px-10 py-4 text-lg font-semibold transition-all duration-300 hover:scale-105 hover:bg-blue-500 hover:shadow-[0_0_40px_rgba(59,130,246,0.6)]">
-            Explore Projects Instead
-          </button>
-        </div>
       </section>
 
       <PostJobModal
-  isOpen={showModal}
-  onClose={() => setShowModal(false)}
-  onSuccess={fetchJobs}
-/>
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onSuccess={fetchJobs}
+      />
+
+      <EditJobModal
+        isOpen={showEdit}
+        onClose={() => {
+          setShowEdit(false);
+          setSelectedJob(null);
+        }}
+        job={selectedJob}
+        onUpdate={handleUpdate}
+      />
+
     </div>
   );
 }

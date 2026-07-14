@@ -161,15 +161,14 @@ function ProjectForm({ initialData = null, onSubmit, onCancel }) {
         </label>
 
         <select
-          name="status"
-          value={formData.status}
-          onChange={handleChange}
-          className="w-full rounded-lg border border-slate-700 bg-slate-800 p-3 text-white outline-none focus:border-blue-500"
-        >
-          <option value="Open">Open</option>
-          <option value="In Progress">In Progress</option>
-          <option value="Completed">Completed</option>
-        </select>
+  name="status"
+  value={formData.status}
+  onChange={handleChange}
+>
+  <option value="Open">Open</option>
+  <option value="In Progress">In Progress</option>
+  <option value="Closed">Closed</option>
+</select>
       </div>
 
       {/* Buttons */}

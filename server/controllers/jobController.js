@@ -1,6 +1,6 @@
 const Job = require("../models/Job");
 
-// Create Job
+// ================= CREATE JOB =================
 const createJob = async (req, res) => {
   try {
     const job = await Job.create({
@@ -8,14 +8,18 @@ const createJob = async (req, res) => {
       postedBy: req.user,
     });
 
+    await job.populate("postedBy", "name email");
+
     res.status(201).json(job);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
-// Get All Jobs
+// ================= GET ALL JOBS =================
 const getJobs = async (req, res) => {
   try {
     const jobs = await Job.find()
@@ -26,11 +30,13 @@ const getJobs = async (req, res) => {
     res.json(jobs);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
-// Get Single Job
+// ================= GET SINGLE JOB =================
 const getJobById = async (req, res) => {
   try {
     const job = await Job.findById(req.params.id)
@@ -52,7 +58,95 @@ const getJobById = async (req, res) => {
   }
 };
 
-// Apply for Job
+// ================= GET MY JOBS =================
+const getMyJobs = async (req, res) => {
+  try {
+    const jobs = await Job.find({
+      postedBy: req.user,
+    })
+      .populate("postedBy", "name email")
+      .populate("applicants", "name email")
+      .sort({ createdAt: -1 });
+
+    res.json(jobs);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+// ================= UPDATE JOB =================
+const updateJob = async (req, res) => {
+  try {
+    const job = await Job.findById(req.params.id);
+
+    if (!job) {
+      return res.status(404).json({
+        message: "Job not found",
+      });
+    }
+
+    if (job.postedBy.toString() !== req.user) {
+      return res.status(403).json({
+        message: "Unauthorized",
+      });
+    }
+
+    job.title = req.body.title;
+    job.company = req.body.company;
+    job.location = req.body.location;
+    job.salary = req.body.salary;
+    job.type = req.body.type;
+    job.description = req.body.description;
+    job.skills = req.body.skills;
+
+    await job.save();
+
+    await job.populate("postedBy", "name email");
+    await job.populate("applicants", "name email");
+
+    res.json(job);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+// ================= DELETE JOB =================
+const deleteJob = async (req, res) => {
+  try {
+    const job = await Job.findById(req.params.id);
+
+    if (!job) {
+      return res.status(404).json({
+        message: "Job not found",
+      });
+    }
+
+    if (job.postedBy.toString() !== req.user) {
+      return res.status(403).json({
+        message: "Unauthorized",
+      });
+    }
+
+    await job.deleteOne();
+
+    res.json({
+      message: "Job deleted successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+// ================= APPLY JOB =================
 const applyJob = async (req, res) => {
   try {
     const job = await Job.findById(req.params.id);
@@ -63,9 +157,21 @@ const applyJob = async (req, res) => {
       });
     }
 
-    if (job.applicants.includes(req.user)) {
+    // Owner cannot apply
+    if (job.postedBy.toString() === req.user) {
       return res.status(400).json({
-        message: "Already applied",
+        message: "You posted this job.",
+      });
+    }
+
+    // Already applied
+    if (
+      job.applicants.some(
+        (applicant) => applicant.toString() === req.user
+      )
+    ) {
+      return res.status(400).json({
+        message: "Already applied.",
       });
     }
 
@@ -73,8 +179,12 @@ const applyJob = async (req, res) => {
 
     await job.save();
 
+    await job.populate("postedBy", "name email");
+    await job.populate("applicants", "name email");
+
     res.json({
-      message: "Applied Successfully",
+      message: "Application submitted successfully.",
+      job,
     });
   } catch (error) {
     console.error(error);
@@ -88,5 +198,8 @@ module.exports = {
   createJob,
   getJobs,
   getJobById,
+  getMyJobs,
+  updateJob,
+  deleteJob,
   applyJob,
 };

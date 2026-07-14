@@ -19,19 +19,20 @@ function Projects() {
   const [showEdit, setShowEdit] = useState(false);
 
   const [selectedProject, setSelectedProject] = useState(null);
+
   const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("All");
 
-  const fetchProjects = async (searchText = "") => {
-  try {
-    const data = await getProjects(searchText);
-
-    setProjects(data);
-  } catch (error) {
-    console.log(error);
-  } finally {
-    setLoading(false);
-  }
-};
+  const fetchProjects = async () => {
+    try {
+      const data = await getProjects();
+      setProjects(data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchProjects();
@@ -78,6 +79,32 @@ function Projects() {
     }
   };
 
+  // Search + Filter
+  const filteredProjects = projects.filter((project) => {
+    const text = search.toLowerCase();
+
+    const matchesSearch =
+  project.title?.toLowerCase().includes(text) ||
+  project.description?.toLowerCase().includes(text) ||
+  project.tech?.some((tech) =>
+    tech.toLowerCase().includes(text)
+  );
+
+    let matchesFilter = true;
+
+if (filter === "Open") {
+  matchesFilter = project.status === "Open";
+} else if (filter === "In Progress") {
+  matchesFilter = project.status === "In Progress";
+} else if (filter === "Completed") {
+  matchesFilter =
+    project.status === "Completed" ||
+    project.status === "Closed";
+}
+
+    return matchesSearch && matchesFilter;
+  });
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-950 text-2xl text-white">
@@ -91,66 +118,106 @@ function Projects() {
       <div className="mx-auto max-w-7xl">
 
         {/* Header */}
-<div className="mb-12 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+        <div className="mb-12 flex flex-col gap-8">
 
-  <div>
-    <p className="text-blue-400">
-      Explore
-    </p>
+          <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
 
-    <h1 className="mt-2 text-5xl font-bold">
-      Student Projects
-    </h1>
+            <div>
+              <p className="text-blue-400">
+                Explore
+              </p>
 
-    <p className="mt-4 max-w-2xl text-slate-400">
-      Discover innovative student projects, collaborate with talented
-      developers, and build your portfolio by joining exciting teams.
-    </p>
-  </div>
+              <h1 className="mt-2 text-5xl font-bold">
+                Student Projects
+              </h1>
 
-  <div className="flex flex-col gap-4 sm:flex-row">
+              <p className="mt-4 max-w-2xl text-slate-400">
+                Discover innovative student projects,
+                collaborate with talented developers,
+                and build your portfolio.
+              </p>
+            </div>
 
-    <input
-      type="text"
-      placeholder="Search projects..."
-      value={search}
-      onChange={(e) => {
-        setSearch(e.target.value);
-        fetchProjects(e.target.value);
-      }}
-      className="w-80 rounded-xl border border-slate-700 bg-slate-900 px-5 py-3 text-white outline-none transition focus:border-blue-500"
-    />
+            <div className="flex flex-col gap-4 sm:flex-row">
 
-    <button
-      onClick={() => setShowCreate(true)}
-      className="rounded-xl bg-blue-600 px-6 py-3 font-semibold transition hover:bg-blue-700"
-    >
-      + Create Project
-    </button>
+              <input
+                type="text"
+                placeholder="Search projects..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-80 rounded-xl border border-slate-700 bg-slate-900 px-5 py-3 text-white outline-none transition focus:border-blue-500"
+              />
 
-  </div>
+              <button
+                onClick={() => setShowCreate(true)}
+                className="rounded-xl bg-blue-600 px-6 py-3 font-semibold transition hover:bg-blue-700"
+              >
+                + Create Project
+              </button>
 
-</div>
+            </div>
 
-        {projects.length === 0 ? (
+          </div>
+
+          {/* Filters */}
+
+          <div className="flex flex-wrap gap-3">
+
+            {[
+  "All",
+  "Open",
+  "In Progress",
+  "Completed",
+].map((item) => (
+  <button
+    key={item}
+    onClick={() => setFilter(item)}
+    className={`rounded-full px-5 py-2 transition ${
+      filter === item
+        ? "bg-blue-600 text-white"
+        : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+    }`}
+  >
+    {item}
+  </button>
+))}
+
+          </div>
+
+        </div>
+
+        {filteredProjects.length === 0 ? (
+
           <div className="rounded-3xl border border-dashed border-slate-700 py-24 text-center">
-            <h2 className="text-2xl font-bold">
-              No Projects Yet
+
+            <div className="text-6xl">
+              📂
+            </div>
+
+            <h2 className="mt-6 text-3xl font-bold">
+              No Projects Found
             </h2>
 
             <p className="mt-3 text-slate-400">
-              Click "Create Project" to add your first project.
+              Try changing your search or filter,
+              or create a new project.
             </p>
+
           </div>
+
         ) : (
+
           <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
-            {projects.map((project) => (
-  <ProjectCard
-    key={project._id}
-    project={project}
-  />
-))}
+
+            {filteredProjects.map((project) => (
+              <ProjectCard
+                key={project._id}
+                project={project}
+              />
+            ))}
+
           </div>
+
         )}
 
       </div>

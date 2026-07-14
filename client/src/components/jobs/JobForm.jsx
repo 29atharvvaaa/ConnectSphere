@@ -1,7 +1,12 @@
-import { useState } from "react";
-import { createJob } from "../../api/jobService";
+import { useEffect, useState } from "react";
+import { createJob, updateJob } from "../../api/jobService";
 
-function JobForm({ onSuccess, onClose }) {
+function JobForm({
+  initialData = null,
+  onSuccess,
+  onClose,
+  isEditing = false,
+}) {
   const [formData, setFormData] = useState({
     title: "",
     company: "",
@@ -14,11 +19,27 @@ function JobForm({ onSuccess, onClose }) {
 
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        title: initialData.title || "",
+        company: initialData.company || "",
+        location: initialData.location || "",
+        type: initialData.type || "Internship",
+        description: initialData.description || "",
+        salary: initialData.salary || "",
+        skills: initialData.skills
+          ? initialData.skills.join(", ")
+          : "",
+      });
+    }
+  }, [initialData]);
+
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -27,20 +48,28 @@ function JobForm({ onSuccess, onClose }) {
     try {
       setLoading(true);
 
-      await createJob({
+      const payload = {
         ...formData,
         skills: formData.skills
           .split(",")
-          .map((skill) => skill.trim()),
-      });
+          .map((skill) => skill.trim())
+          .filter(Boolean),
+      };
 
-      alert("Opportunity Posted Successfully!");
+      if (isEditing) {
+        await updateJob(initialData._id, payload);
+        alert("Opportunity Updated Successfully!");
+      } else {
+        await createJob(payload);
+        alert("Opportunity Posted Successfully!");
+      }
 
       onSuccess();
       onClose();
     } catch (error) {
       alert(
-        error.response?.data?.message || "Failed to Post Opportunity"
+        error.response?.data?.message ||
+          "Something went wrong."
       );
     } finally {
       setLoading(false);
@@ -81,7 +110,7 @@ function JobForm({ onSuccess, onClose }) {
 
         <input
           name="salary"
-          placeholder="Salary"
+          placeholder="Salary / Stipend"
           value={formData.salary}
           onChange={handleChange}
           className="rounded-xl border border-slate-700 bg-slate-950 p-3 outline-none focus:border-blue-500"
@@ -89,9 +118,21 @@ function JobForm({ onSuccess, onClose }) {
 
       </div>
 
+      <select
+        name="type"
+        value={formData.type}
+        onChange={handleChange}
+        className="w-full rounded-xl border border-slate-700 bg-slate-950 p-3 outline-none focus:border-blue-500"
+      >
+        <option>Internship</option>
+        <option>Full Time</option>
+        <option>Part Time</option>
+        <option>Remote</option>
+      </select>
+
       <input
         name="skills"
-        placeholder="React, Node, MongoDB"
+        placeholder="React, Node.js, MongoDB"
         value={formData.skills}
         onChange={handleChange}
         className="w-full rounded-xl border border-slate-700 bg-slate-950 p-3 outline-none focus:border-blue-500"
@@ -120,9 +161,15 @@ function JobForm({ onSuccess, onClose }) {
         <button
           type="submit"
           disabled={loading}
-          className="rounded-xl bg-blue-600 px-6 py-3 font-semibold hover:bg-blue-500"
+          className="rounded-xl bg-blue-600 px-6 py-3 font-semibold hover:bg-blue-500 disabled:opacity-60"
         >
-          {loading ? "Posting..." : "Publish Opportunity"}
+          {loading
+            ? isEditing
+              ? "Updating..."
+              : "Posting..."
+            : isEditing
+            ? "Update Opportunity"
+            : "Publish Opportunity"}
         </button>
 
       </div>
