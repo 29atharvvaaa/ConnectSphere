@@ -96,22 +96,24 @@ function ProjectDetails() {
     "Failed to update project."
 );
   };
+};
 
   const handleAccept = async (userId) => {
-    try {
-      await acceptRequest(project._id, userId);
+  try {
+    await acceptRequest(project._id, userId);
 
-      toast.success("Request accepted successfully!");
+    toast.success("Request accepted successfully!");
 
-      fetchProject();
-    } catch (error) {
-      console.log(error);
+    fetchProject();
+  } catch (error) {
+    console.log(error);
 
-      toast.error(
-  error.response?.data?.message ||
-    "Failed to accept request."
-);
-  };
+    toast.error(
+      error.response?.data?.message ||
+      "Failed to accept request."
+    );
+  }
+};
 
   const handleReject = async (userId) => {
     try {
