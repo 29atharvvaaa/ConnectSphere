@@ -7,8 +7,11 @@ const API = axios.create({
 const getToken = () => localStorage.getItem("token");
 
 // ================= GET ALL PROJECTS =================
-export const getProjects = async () => {
+export const getProjects = async (search = "") => {
   const response = await API.get("/", {
+    params: {
+      search,
+    },
     headers: {
       Authorization: `Bearer ${getToken()}`,
     },

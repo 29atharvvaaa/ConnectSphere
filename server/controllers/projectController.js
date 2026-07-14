@@ -41,9 +41,37 @@ const createProject = async (req, res) => {
 // ================= GET ALL PROJECTS =================
 const getProjects = async (req, res) => {
   try {
-    const projects = await Project.find()
-  .populate("owner", "name email")
-  .populate("members", "name email");
+    const { search } = req.query;
+
+    let filter = {};
+
+    if (search) {
+      filter = {
+        $or: [
+          {
+            title: {
+              $regex: search,
+              $options: "i",
+            },
+          },
+          {
+            description: {
+              $regex: search,
+              $options: "i",
+            },
+          },
+          {
+            tech: {
+              $in: [new RegExp(search, "i")],
+            },
+          },
+        ],
+      };
+    }
+
+    const projects = await Project.find(filter)
+      .populate("owner", "name email")
+      .populate("members", "name email");
 
     res.json(projects);
   } catch (error) {

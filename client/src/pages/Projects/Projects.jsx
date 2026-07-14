@@ -19,18 +19,19 @@ function Projects() {
   const [showEdit, setShowEdit] = useState(false);
 
   const [selectedProject, setSelectedProject] = useState(null);
+  const [search, setSearch] = useState("");
 
-  const fetchProjects = async () => {
-    try {
-      const data = await getProjects();
+  const fetchProjects = async (searchText = "") => {
+  try {
+    const data = await getProjects(searchText);
 
-setProjects(data);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    setProjects(data);
+  } catch (error) {
+    console.log(error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchProjects();
@@ -90,31 +91,46 @@ setProjects(data);
       <div className="mx-auto max-w-7xl">
 
         {/* Header */}
-        <div className="mb-12 flex items-center justify-between">
+<div className="mb-12 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
 
-          <div>
-            <p className="text-blue-400">
-              Explore
-            </p>
+  <div>
+    <p className="text-blue-400">
+      Explore
+    </p>
 
-            <h1 className="mt-2 text-5xl font-bold">
-              Student Projects
-            </h1>
+    <h1 className="mt-2 text-5xl font-bold">
+      Student Projects
+    </h1>
 
-            <p className="mt-4 max-w-2xl text-slate-400">
-              Discover innovative student projects, collaborate with talented
-              developers, and build your portfolio by joining exciting teams.
-            </p>
-          </div>
+    <p className="mt-4 max-w-2xl text-slate-400">
+      Discover innovative student projects, collaborate with talented
+      developers, and build your portfolio by joining exciting teams.
+    </p>
+  </div>
 
-          <button
-            onClick={() => setShowCreate(true)}
-            className="rounded-xl bg-blue-600 px-6 py-3 font-semibold transition hover:bg-blue-700"
-          >
-            + Create Project
-          </button>
+  <div className="flex flex-col gap-4 sm:flex-row">
 
-        </div>
+    <input
+      type="text"
+      placeholder="Search projects..."
+      value={search}
+      onChange={(e) => {
+        setSearch(e.target.value);
+        fetchProjects(e.target.value);
+      }}
+      className="w-80 rounded-xl border border-slate-700 bg-slate-900 px-5 py-3 text-white outline-none transition focus:border-blue-500"
+    />
+
+    <button
+      onClick={() => setShowCreate(true)}
+      className="rounded-xl bg-blue-600 px-6 py-3 font-semibold transition hover:bg-blue-700"
+    >
+      + Create Project
+    </button>
+
+  </div>
+
+</div>
 
         {projects.length === 0 ? (
           <div className="rounded-3xl border border-dashed border-slate-700 py-24 text-center">
