@@ -9,6 +9,8 @@ import Projects from "../pages/Projects/Projects";
 import ProjectDetails from "../pages/Projects/ProjectDetails";
 import Jobs from "../pages/Jobs/Jobs";
 import EditProfile from "../pages/Profile/EditProfile";
+import MyProjects from "../pages/Projects/MyProjects";
+import MyJobs from "../pages/Jobs/MyJobs";
 
 import ProtectedRoute from "../components/ProtectedRoute";
 import MainLayout from "../layouts/MainLayout";
@@ -38,9 +40,11 @@ function AppRoutes() {
         <Route path="/profile/:id" element={<Profile />} />
 
         <Route path="/projects" element={<Projects />} />
+        <Route path="/my-projects" element={<MyProjects />} />
         <Route path="/projects/:id" element={<ProjectDetails />} />
 
         <Route path="/jobs" element={<Jobs />} />
+        <Route path="/my-jobs" element={<MyJobs />} />
         <Route path="/edit-profile" element={<EditProfile />} />
       </Route>
 

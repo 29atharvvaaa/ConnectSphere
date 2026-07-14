@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { createJob, updateJob } from "../../api/jobService";
 
 function JobForm({
@@ -58,19 +59,19 @@ function JobForm({
 
       if (isEditing) {
         await updateJob(initialData._id, payload);
-        alert("Opportunity Updated Successfully!");
+        toast.success("Opportunity Updated Successfully!");
       } else {
         await createJob(payload);
-        alert("Opportunity Posted Successfully!");
+        toast.success("Opportunity Posted Successfully!");
       }
 
       onSuccess();
       onClose();
     } catch (error) {
-      alert(
-        error.response?.data?.message ||
-          "Something went wrong."
-      );
+      toast.error(
+  error.response?.data?.message ||
+    "Something went wrong."
+);
     } finally {
       setLoading(false);
     }

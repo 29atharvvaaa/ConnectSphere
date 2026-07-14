@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { User, Mail, Lock } from "lucide-react";
@@ -20,18 +21,20 @@ function Register() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const data = await registerUser(formData);
+  try {
+    const data = await registerUser(formData);
 
-      alert(data.message);
+    toast.success(data.message || "Registration Successful!");
 
-      navigate("/login");
-    } catch (error) {
-      alert(error.response?.data?.message || "Registration Failed");
-    }
-  };
+    navigate("/login");
+  } catch (error) {
+    toast.error(
+      error.response?.data?.message || "Registration Failed"
+    );
+  }
+};
 
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center px-6 py-16">

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import {
   getProfile,
@@ -9,18 +10,19 @@ function EditProfile() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    name: "",
-    bio: "",
-    college: "",
-    skills: "",
-    profilePic: "",
-    branch: "",
-    github: "",
-    linkedin: "",
-    portfolio: "",
-    resume: "",
-    year: "",
-  });
+  name: "",
+  role: "Student",
+  bio: "",
+  college: "",
+  skills: "",
+  profilePic: "",
+  branch: "",
+  github: "",
+  linkedin: "",
+  portfolio: "",
+  resume: "",
+  year: "",
+});
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -29,18 +31,19 @@ function EditProfile() {
         const user = await getProfile(token);
 
         setFormData({
-          name: user.name || "",
-          bio: user.bio || "",
-          college: user.college || "",
-          skills: user.skills?.join(", ") || "",
-          profilePic: user.profilePic || "",
-          branch: user.branch || "",
-          github: user.github || "",
-          linkedin: user.linkedin || "",
-          portfolio: user.portfolio || "",
-          resume: user.resume || "",
-          year: user.year || "",
-        });
+  name: user.name || "",
+  role: user.role || "Student",
+  bio: user.bio || "",
+  college: user.college || "",
+  skills: user.skills?.join(", ") || "",
+  profilePic: user.profilePic || "",
+  branch: user.branch || "",
+  github: user.github || "",
+  linkedin: user.linkedin || "",
+  portfolio: user.portfolio || "",
+  resume: user.resume || "",
+  year: user.year || "",
+});
       } catch (error) {
         console.log(error);
       }
@@ -70,13 +73,13 @@ function EditProfile() {
           .filter(Boolean),
       });
 
-      alert("Profile Updated Successfully!");
+      toast.success("Profile Updated");
       navigate("/profile");
     } catch (error) {
-      alert(
-        error.response?.data?.message ||
-          "Failed to Update Profile"
-      );
+      toast.error(
+  error.response?.data?.message ||
+    "Failed to Update Profile"
+);
     }
   };
 
@@ -103,6 +106,24 @@ function EditProfile() {
             className="w-full rounded-xl bg-slate-800 p-4 text-white outline-none"
           />
         </div>
+
+{/* Role */}
+<div>
+  <label className="mb-2 block text-sm font-medium text-slate-300">
+    Role
+  </label>
+
+  <select
+    name="role"
+    value={formData.role}
+    onChange={handleChange}
+    className="w-full rounded-xl bg-slate-800 p-4 text-white outline-none"
+  >
+    <option value="Student">Student</option>
+    <option value="Recruiter">Recruiter</option>
+    <option value="Mentor">Mentor</option>
+  </select>
+</div>
 
         {/* College */}
         <div>

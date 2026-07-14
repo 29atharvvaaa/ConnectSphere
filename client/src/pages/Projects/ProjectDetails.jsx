@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
 import EditProjectModal from "./EditProjectModal";
 
@@ -39,21 +40,21 @@ function ProjectDetails() {
   };
 
   const handleJoin = async () => {
-    try {
-      await joinProject(id);
+  try {
+    await joinProject(id);
 
-      alert("Join request sent successfully!");
+    toast.success("Join request sent successfully!");
 
-      fetchProject();
-    } catch (error) {
-      console.log(error);
+    fetchProject();
+  } catch (error) {
+    console.log(error);
 
-      alert(
-        error.response?.data?.message ||
-          "Failed to send join request."
-      );
-    }
-  };
+    toast.error(
+      error.response?.data?.message ||
+      "Failed to send join request."
+    );
+  }
+};
 
   const handleDelete = async () => {
     const confirmDelete = window.confirm(
@@ -65,16 +66,16 @@ function ProjectDetails() {
     try {
       await deleteProject(project._id);
 
-      alert("Project deleted successfully!");
+      toast.success("Project Deleted");
 
       navigate("/projects");
     } catch (error) {
       console.log(error);
 
-      alert(
-        error.response?.data?.message ||
-          "Failed to delete project."
-      );
+      toast.error(
+  error.response?.data?.message ||
+    "Failed to delete project."
+);
     }
   };
 
@@ -86,48 +87,46 @@ function ProjectDetails() {
 
       setShowEditModal(false);
 
-      alert("Project updated successfully!");
+      toast.success("Project updated successfully!");
     } catch (error) {
       console.log(error);
 
-      alert(
-        error.response?.data?.message ||
-          "Failed to update project."
-      );
-    }
+      toast.error(
+  error.response?.data?.message ||
+    "Failed to update project."
+);
   };
 
   const handleAccept = async (userId) => {
     try {
       await acceptRequest(project._id, userId);
 
-      alert("Request accepted successfully!");
+      toast.success("Request accepted successfully!");
 
       fetchProject();
     } catch (error) {
       console.log(error);
 
-      alert(
-        error.response?.data?.message ||
-          "Failed to accept request."
-      );
-    }
+      toast.error(
+  error.response?.data?.message ||
+    "Failed to accept request."
+);
   };
 
   const handleReject = async (userId) => {
     try {
       await rejectRequest(project._id, userId);
 
-      alert("Request rejected.");
+      toast.success("Request rejected.");
 
       fetchProject();
     } catch (error) {
       console.log(error);
 
-      alert(
-        error.response?.data?.message ||
-          "Failed to reject request."
-      );
+      toast.error(
+  error.response?.data?.message ||
+    "Failed to reject request."
+);
     }
   };
 

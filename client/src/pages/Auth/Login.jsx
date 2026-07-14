@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock } from "lucide-react";
@@ -24,11 +25,11 @@ const handleSubmit = async (e) => {
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data.user));
 
-    alert("Login Successful!");
+    toast.success("Login Successful");
 
     navigate("/dashboard");
   } catch (error) {
-    alert(
+    toast.error(
       error.response?.data?.message || "Login Failed"
     );
   }

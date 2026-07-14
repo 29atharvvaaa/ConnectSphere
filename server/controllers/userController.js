@@ -46,19 +46,20 @@ const getUserById = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const {
-      name,
-      bio,
-      college,
-      branch,
-      year,
-      location,
-      skills,
-      github,
-      linkedin,
-      portfolio,
-      resume,
-      profilePic,
-    } = req.body;
+  name,
+  role,
+  bio,
+  college,
+  branch,
+  year,
+  location,
+  skills,
+  github,
+  linkedin,
+  portfolio,
+  resume,
+  profilePic,
+} = req.body;
 
     const user = await User.findById(req.user);
 
@@ -69,6 +70,7 @@ const updateProfile = async (req, res) => {
     }
 
     user.name = name ?? user.name;
+    user.role = role ?? user.role;
     user.bio = bio ?? user.bio;
     user.college = college ?? user.college;
     user.branch = branch ?? user.branch;

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "react-toastify";
 import {
   getJobs,
   applyJob,
@@ -47,29 +48,38 @@ function Jobs() {
   };
 
   const handleApply = async (id) => {
-    try {
-      await applyJob(id);
-      alert("Application Submitted!");
-      fetchJobs();
-    } catch (error) {
-      alert(error.response?.data?.message || "Failed to Apply");
-    }
-  };
+  try {
+    await applyJob(id);
+
+    toast.success("Application Submitted!");
+
+    fetchJobs();
+  } catch (error) {
+    toast.error(
+      error.response?.data?.message || "Failed to Apply"
+    );
+  }
+};
 
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm(
-      "Delete this opportunity?"
+  const confirmDelete = window.confirm(
+    "Delete this opportunity?"
+  );
+
+  if (!confirmDelete) return;
+
+  try {
+    await deleteJob(id);
+
+    toast.success("Opportunity Deleted!");
+
+    fetchJobs();
+  } catch (error) {
+    toast.error(
+      error.response?.data?.message || "Delete Failed"
     );
-
-    if (!confirmDelete) return;
-
-    try {
-      await deleteJob(id);
-      fetchJobs();
-    } catch (error) {
-      alert(error.response?.data?.message || "Delete Failed");
-    }
-  };
+  }
+};
 
   const handleEdit = (job) => {
     setSelectedJob(job);

@@ -75,57 +75,65 @@ function Dashboard() {
 
         {/* Stats */}
 
-        <div className="grid gap-6 md:grid-cols-4">
+<div className="grid gap-6 md:grid-cols-4">
 
-          <div className="rounded-3xl border border-slate-800 bg-slate-900 p-7 hover:border-blue-500 transition">
+  {/* Projects Created */}
+  <div
+    onClick={() => navigate("/my-projects")}
+    className="cursor-pointer rounded-3xl border border-slate-800 bg-slate-900 p-7 transition duration-300 hover:-translate-y-1 hover:border-blue-500"
+  >
+    <p className="text-slate-400">
+      Projects Created
+    </p>
 
-            <p className="text-slate-400">
-              Projects Created
-            </p>
+    <h2 className="mt-3 text-5xl font-bold text-blue-500">
+      {dashboard.projectsCreated}
+    </h2>
+  </div>
 
-            <h2 className="mt-3 text-5xl font-bold text-blue-500">
-              {dashboard.projectsCreated}
-            </h2>
+  {/* Projects Joined */}
+  <div
+    onClick={() => navigate("/projects")}
+    className="cursor-pointer rounded-3xl border border-slate-800 bg-slate-900 p-7 transition duration-300 hover:-translate-y-1 hover:border-blue-500"
+  >
+    <p className="text-slate-400">
+      Projects Joined
+    </p>
 
-          </div>
+    <h2 className="mt-3 text-5xl font-bold text-blue-500">
+      {dashboard.projectsJoined}
+    </h2>
+  </div>
 
-          <div className="rounded-3xl border border-slate-800 bg-slate-900 p-7 hover:border-blue-500 transition">
+  {/* Jobs Posted */}
+  <div
+    onClick={() => navigate("/my-jobs")}
+    className="cursor-pointer rounded-3xl border border-slate-800 bg-slate-900 p-7 transition duration-300 hover:-translate-y-1 hover:border-blue-500"
+  >
+    <p className="text-slate-400">
+      Jobs Posted
+    </p>
 
-            <p className="text-slate-400">
-              Projects Joined
-            </p>
+    <h2 className="mt-3 text-5xl font-bold text-blue-500">
+      {dashboard.jobsPosted}
+    </h2>
+  </div>
 
-            <h2 className="mt-3 text-5xl font-bold text-blue-500">
-              {dashboard.projectsJoined}
-            </h2>
+  {/* Jobs Applied */}
+  <div
+    onClick={() => navigate("/jobs")}
+    className="cursor-pointer rounded-3xl border border-slate-800 bg-slate-900 p-7 transition duration-300 hover:-translate-y-1 hover:border-blue-500"
+  >
+    <p className="text-slate-400">
+      Jobs Applied
+    </p>
 
-          </div>
+    <h2 className="mt-3 text-5xl font-bold text-blue-500">
+      {dashboard.jobsApplied}
+    </h2>
+  </div>
 
-          <div className="rounded-3xl border border-slate-800 bg-slate-900 p-7 hover:border-blue-500 transition">
-
-            <p className="text-slate-400">
-              Jobs Posted
-            </p>
-
-            <h2 className="mt-3 text-5xl font-bold text-blue-500">
-              {dashboard.jobsPosted}
-            </h2>
-
-          </div>
-
-          <div className="rounded-3xl border border-slate-800 bg-slate-900 p-7 hover:border-blue-500 transition">
-
-            <p className="text-slate-400">
-              Jobs Applied
-            </p>
-
-            <h2 className="mt-3 text-5xl font-bold text-blue-500">
-              {dashboard.jobsApplied}
-            </h2>
-
-          </div>
-
-        </div>
+</div>
 
         {/* Recent Projects */}
 

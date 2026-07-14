@@ -215,6 +215,47 @@ function Profile() {
 
         </div>
 
+        {/* Quick Actions */}
+{isOwnProfile && (
+  <div className="mt-10 grid gap-6 md:grid-cols-2">
+
+    <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
+      <h2 className="text-2xl font-bold">
+        📁 My Projects
+      </h2>
+
+      <p className="mt-3 text-slate-400">
+        View and manage all the projects you've created.
+      </p>
+
+      <button
+        onClick={() => navigate("/my-projects")}
+        className="mt-6 rounded-xl bg-blue-600 px-5 py-3 font-semibold hover:bg-blue-700"
+      >
+        View Projects
+      </button>
+    </div>
+
+    <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
+      <h2 className="text-2xl font-bold">
+        💼 My Jobs
+      </h2>
+
+      <p className="mt-3 text-slate-400">
+        Manage the internship opportunities you've posted.
+      </p>
+
+      <button
+        onClick={() => navigate("/my-jobs")}
+        className="mt-6 rounded-xl bg-blue-600 px-5 py-3 font-semibold hover:bg-blue-700"
+      >
+        View Jobs
+      </button>
+    </div>
+
+  </div>
+)}
+
       </section>
 
     </div>
