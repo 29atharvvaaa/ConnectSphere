@@ -18,8 +18,7 @@ app.use("/api/jobs", jobRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 // MongoDB Connection
-console.log("MONGO URI EXISTS:", !!process.env.MONGO_URI);
-console.log("MONGO_URI:", process.env.MONGO_URI);
+
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
