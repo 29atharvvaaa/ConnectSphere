@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:5001/api/users",
+  baseURL: "https://connectsphere-api-y9y8.onrender.com/api/users",
 });
 
 const getToken = () => localStorage.getItem("token");

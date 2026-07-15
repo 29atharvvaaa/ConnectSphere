@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API = "http://localhost:5001/api/jobs";
+const API = "https://connectsphere-api-y9y8.onrender.com/api/jobs";
 
 const getToken = () => localStorage.getItem("token");
 

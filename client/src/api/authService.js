@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:5001/api/auth",
+  baseURL: "https://connectsphere-api-y9y8.onrender.com/api/auth",
 });
 
 // Register User
