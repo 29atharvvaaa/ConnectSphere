@@ -1,5 +1,6 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { LogOut, Plus } from "lucide-react";
+import logo from "../../assets/logo.png";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -20,12 +21,20 @@ function Navbar() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
 
         {/* Logo */}
-        <Link
-          to="/dashboard"
-          className="text-2xl font-bold text-blue-500"
-        >
-          ConnectSphere
-        </Link>
+<Link
+  to="/dashboard"
+  className="flex items-center gap-3"
+>
+  <img
+    src={logo}
+    alt="ConnectSphere"
+    className="h-10 w-10 object-contain"
+  />
+
+  <span className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-violet-500 bg-clip-text text-transparent">
+    ConnectSphere
+  </span>
+</Link>
 
         {/* Navigation */}
         <div className="hidden gap-8 md:flex">
